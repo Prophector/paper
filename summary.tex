@@ -1,0 +1,70 @@
+\documentclass[conference]{IEEEtran}
+\IEEEoverridecommandlockouts
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{algorithmic}
+\usepackage{graphicx}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
+    T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+\begin{document}
+
+\title{User-Driven COVID-19 Forecasting}
+
+\author{\IEEEauthorblockN{Sebastian Häni}
+\IEEEauthorblockA{\textit{School of Engineering} \\
+\textit{Zurich University of Applied Sciences (ZHAW)}\\
+Zurich, Switzerland \\
+haeniseb@students.zhaw.ch}
+}
+\maketitle
+
+\begin{abstract}
+Many countries have introduced softly defined metric-based rules for entry and quarantine restrictions as a measure to slow down the spread of the COVID-19 virus. Citizens want to inform themselves where a country currently stands regarding these different metrics and desire a forecast to learn if the situation is improving or worsening. We describe a web platform that enables the average citizen to explore the data and visualize the exact metrics they are interested in and then let them personally create a forecasting model to their needs without requiring prior statistical knowledge. By providing highly interactive maps and charts we will give greater insights into the pandemic and its progress.
+\end{abstract}
+
+\begin{IEEEkeywords}
+COVID-19; Statistical practice; Nonlinear regression; Time series
+\end{IEEEkeywords}
+
+
+\input{chapters/01_intro}
+\input{chapters/02_solution}
+\input{chapters/03_information_retrieval}
+\input{chapters/04_map_vis}
+\input{chapters/05_interactive}
+\input{chapters/06_forecasting}
+\input{chapters/07_evaluation}
+\input{chapters/08_scaling}
+
+\section{Conclusion}
+
+The entry barrier to investigate COVID-19 time series has been significantly lowered by our solution, as it is providing users with many options to choose how they want to inspect the data in a way that is relevant to them, without having to produce each possible combination of settings beforehand for them. Our system is capable of ingesting the data autonomously from different sources such as ``Our World in Data`` and ``FOPH`` and making it available to everyone with Internet access.
+
+We showed how such a system can be engineered in a scalable and cost-effective way on public cloud infrastructure while still performing fast executing user actions. Our application also showcases how a user interface can be designed to accommodate complex use cases such as inspecting time series interactively, adding comparison data, creating prediction models and visualizing such predictions while not overloading the user or confusing them.
+
+With our solution it is also possible to let users compete creating better models and sharing them by URL because they all have a score attached. Those scores are additional information which can be used to quickly find a suitable model, while still allowing everyone, even not logged in users, to view those predictions.
+
+The solution has room for improvement regarding the aforementioned score, which is a number that can be misleading because it has been produced with minimal compute and it is not the full result of the validation either. An improvement would be to store the complete result and show the SHF graph to the users, when they select a prediction, which allows for better judging of the model performance.
+
+Additionally, it would be great if users could even compare regions that are smaller than a country. E.g., a user might want to compare the regions of their own country. This has proven difficult to implement, (1) it is not easy to get data for all possible regions worldwide as we would need to source our data from specific governments from almost every country, and (2) adding another hierarchy layer to the UI where the user can select a country, or a sub-region will complicate the UI.
+
+Some COVID-19 series contain outliers, e.g., some countries had mass testing of the population, which skews testing numbers massively for a few days. Such outliers should probably be removed manually by the user creating a forecast. Our solution currently does not provide the possibility to remove such outliers. A future improvement would be to let users select a date or range of dates to be removed from the data. Prophet can easily handle missing data and would not have a problem.
+
+We are sure our solution is appealing to many users and is providing value to them.
+
+\begin{thebibliography}{00}
+\bibitem{b6} Anderson, Roy M and Heesterbeek, Hans and Klinkenberg, Don and Hollingsworth, T D{\'e}irdre (2020), ``How will country-based mitigation measures influence the course of the COVID-19 epidemic\text{?}``, The lancet, 395, 931--934
+\bibitem{b7} Roser, Max and Ritchie, Hannah and Ortiz-Ospina, Esteban and Hasell, Joe (2020), ``Coronavirus pandemic (COVID-19)``, Our world in data
+\bibitem{b1} Sean J. Taylor \& Benjamin Letham (2018), ``Forecasting at Scale``, The American Statistician, 72:1, 37-45.
+\bibitem{b2} Hyndman, R. J., Khandakar, Y., et al. (2007), ``Automatic Time Series for Forecasting: The Forecast Package for R,`` number 6/07, Monash University, Department of Econometrics and Business Statistics.
+\bibitem{b3} Hyndman, R. J., Koehler, A. B., Snyder, R. D., and Grose, S. (2002), ``A State Space Framework for Automatic Forecasting Using Exponential Smoothing Methods,`` International Journal of Forecasting, 18, 439–454.
+\bibitem{b4} De Livera, A. M., Hyndman, R. J., and Snyder, R. D. (2011), “A State Space
+Framework for Automatic Forecasting Using Exponential Smoothing Methods,” Journal of the American Statistical Association, 106, 1513–1527.
+\bibitem{b5} Carpenter, B., Gelman, A., Hoffman, M., Lee, D., Goodrich, B., Betancourt, M., Brubaker, M. A., Guo, J., Li, P., and Riddell, A. (2017), “Stan: A Probabilistic Programming Language,” Journal of Statistical Software, 76, 1–32.
+\end{thebibliography}
+\vspace{12pt}
+
+\end{document}

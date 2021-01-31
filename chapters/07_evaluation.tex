@@ -1,0 +1,35 @@
+\section{Evaluating Models}
+
+The user can optimize a model well given enough time. To facilitate comparison between models of different users, our system can rank created models in order of the error term. We call this the score of the model, the lower the score the better. This score is shown in the UI and gives a user a goal, to achieve a better score than a competing model.
+
+\subsection{Simulated Historical Forecasts}
+The metric used to compare models is the Mean Absolute Percentage Error (MAPE) over a number of forecasts produced with different prediction horizons.
+
+Time series data points are inherently dependent on previous points. This is making it hard to use traditional methods. The method proposed in ``Forecasting at Scale`` \cite{b1} is Simulated Historical Forecasts (SHFs), that produce \(K\) forecasts at various cutoff points in the history. The generally used number of points is a forecast every \(H/2\) periods. This allows the model error term to be measured in MAPE which can be compared to other models. 
+
+Time series data usually encompasses a lot of data points and running SHFs with the maximum number of periods would not be feasible as the model needs to be refitted as many times as there are points in the data. With SHFs, the simulation count is significantly reduced, and the computation can run independent in several processes or separate machines.
+
+
+\subsection{Identifying Large Forecast Errors}
+
+Using SHFs we can find common error patterns when producing forecasts. The main errors to look at are as follows:
+
+\begin{itemize}
+    \item A large error compared to the baselines usually means the model is misspecified. The analysts most likely need to change the trend and / or seasonality components.
+    \item If we discover a large error on all methods on a particular date, we have found suggestive outliers. The analyst can be asked to confirm to remove these outliers by a supporting system.
+    \item If the error sharply increases from one cutoff to the next, the analyst could introduce a change point there to fix the error.
+\end{itemize}
+
+\subsection{Limiting}
+In our setting we decided to limit the number of simulated forecasts to \(K=5\) to save compute cost and to improve the responsiveness of our system for the user. This is still enough to produce a relevant score but is of course subject to statistical fluctuations. In our findings, these fluctuations are present even with higher numbers of forecasts, and only disappear with a significant amount, taking tens of minutes to compute, which is not feasible for us, as we want to produce evaluations in less than a minute.
+
+We validate the model with a 14 day horizon \(H\) using SHFs, as we decided 14 days is a relevant horizon for COVID-19 models. As government measurements are put into place, the data is irregular seen over longer periods, and thus predicting too far in the future is meaningless. To limit the simulated forecast count, we first set the initial data point count to be \(I = H  * 3\) and then compute the period, which gives us a period independent of the length of the data set that will result in 5 simulated forecasts.
+
+\begin{equation}
+    P=\dfrac{df[-1]-df[0]-H-I}{5}
+    \label{eq:shfPeriods}
+\end{equation}
+
+We don't present the full cross validation error term per horizon but only the final one with a 14 day horizon. This is a single number which can easily be used by users to compare their results and to sort prediction lists according to this score.
+
+In the future we want to present users comparisons with baseline models such as a model using the last value, or a sample mean.

@@ -1,0 +1,18 @@
+
+\section{Scaling and cost factors}
+
+The system as described in figure \ref{fig:system} is designed to be easily scaled. By using the minimal amount of compute, storage, and networking, the system can be operated on a public cloud such as AWS quite cost efficiently. Should there be a rise in users we can identify scaling needs by built-in monitoring solutions or even define auto-scaling strategies to automatically scale with the users using the system, to always only use what we actually need and therefore only get billed for what we used. 
+
+\subsection{Scraping}
+The scraping functions, which use a serverless infrastructure, store data in S3 buckets on AWS, which have an unlimited storage. Both functions and S3 storage can be scaled very well.
+
+\subsection{Central Database}
+We used one central physical database to store countries, time series, models, predictions, users, and jobs to save costs, by not having to run multiple database instances. Should there be a need, we could separate the database into separate physical databases storing different entities. We would likely extract country and time series data into a separate one because the only parts of our system writing into that database are the data processing functions. The web backend and the prediction engine read from it, making it suitable for read-only scaling.
+
+We could further extract predictions made by the prediction engine into its own database, as only the prediction engine writes data, and the web backend reads data.
+
+\subsection{Web Backend}
+The web backend is a Java container running a Springboot application, which needs quite a lot of memory just to start up. The smallest instance types of AWS do not have enough memory, which is why we could not make use of the AWS Free Tier to run the backend and instead used a VM that has 2 GB of memory. The one instance should however be capable of handling a lot of load, since there are no real computationally heavy operations to be performed by it. The backend merely handles authentication, querying data from the database and queuing prediction jobs.
+
+\subsection{Prediction Engine}
+The prediction engine uses a worker pattern and is perfectly suited to be scaled to more instances. Each worker fetches pending jobs from the queue, and once they start processing the data, they make an optimistic write to the database that it starts working on the job, and if that fails, it skips the job, because apparently some other worker already grabbed it in the meantime.
